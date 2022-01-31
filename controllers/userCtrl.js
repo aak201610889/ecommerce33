@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const userCtrl = {
   register:async (req, res) => {
     try {
-      const { name, email, password, role } = req.body;
+      const { name, email, password } = req.body;
       const user = await Users.findOne({ email })
       if (user) {
         return res.status(400).json({
@@ -84,6 +84,19 @@ const userCtrl = {
       }
     catch (err) {
       res.status(500).json({msg:err.message});
+    }
+  },
+  addCart: async (req, res) => { 
+    try {
+      const user = await Users.findById(req.user.id);
+      if (!user) return res.status(400).json({ msg: "User does not exist" });
+      await Users.findOneAndUpdate({ _id: req.user.id }, {
+        cart:req.body.cart
+      })
+      return res.json({ msg: "Cart updated successfully" });
+    }
+    catch (err) { 
+      return res.status(500).json({msg:err.message});
     }
   },
 
